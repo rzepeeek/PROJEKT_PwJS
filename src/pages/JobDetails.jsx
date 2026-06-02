@@ -1,0 +1,279 @@
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { supabase } from "../services/supabase";
+
+export default function JobDetails() {
+  const { id } = useParams();
+
+  const [job, setJob] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [applications, setApplications] = useState([]);
+  const [userApplication, setUserApplication] = useState(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      setProfile(profileData);
+
+      if (profileData?.role === "candidate") {
+        const { data: applicationData } = await supabase
+          .from("applications")
+          .select("*")
+          .eq("job_id", id)
+          .eq("candidate_id", user.id)
+          .maybeSingle();
+
+        setUserApplication(applicationData);
+      }
+    }
+
+    const { data: jobData, error } = await supabase
+      .from("job_postings")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setJob(jobData);
+
+    if (
+      user &&
+      jobData.recruiter_id === user.id
+    ) {
+      const { data: applicationsData } = await supabase
+        .from("applications")
+        .select("*")
+        .eq("job_id", id);
+
+      setApplications(applicationsData || []);
+    }
+  }
+
+  async function updateStatus(applicationId, newStatus) {
+    const { error } = await supabase
+      .from("applications")
+      .update({
+        status: newStatus,
+      })
+      .eq("id", applicationId);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    loadData();
+  }
+
+  function getStatusText(status) {
+    switch (status) {
+      case "pending":
+        return "Oczekuje";
+      case "reviewed":
+        return "Przejrzana";
+      case "accepted":
+        return "Zaakceptowana";
+      case "rejected":
+        return "Odrzucona";
+      default:
+        return status;
+    }
+  }
+
+  if (!job) {
+    return <h2>Ładowanie...</h2>;
+  }
+
+  return (
+    <div className="container">
+      <div className="card">
+        <h1>{job.position}</h1>
+
+        <p>
+          <strong>Firma:</strong> {job.company}
+        </p>
+
+        <p>
+          <strong>Lokalizacja:</strong> {job.location}
+        </p>
+
+        <p>
+          <strong>Pensja:</strong>{" "}
+          {job.salary_min} zł - {job.salary_max} zł
+        </p>
+
+        <br />
+
+        <h3>Opis stanowiska</h3>
+
+        <p>{job.description}</p>
+
+        <br />
+
+        {profile?.role === "candidate" && (
+          <>
+            {userApplication ? (
+              <div className="card">
+                <strong>
+                  Status Twojej aplikacji:
+                </strong>{" "}
+                <span
+                  className={`status ${userApplication.status}`}
+                >
+                  {getStatusText(
+                    userApplication.status
+                  )}
+                </span>
+              </div>
+            ) : (
+              <Link to={`/jobs/${job.id}/apply`}>
+                <button className="btn">
+                  Aplikuj
+                </button>
+              </Link>
+            )}
+          </>
+        )}
+
+        {profile?.role === "recruiter" &&
+          job.recruiter_id === profile.id && (
+            <Link to={`/jobs/${job.id}/edit`}>
+              <button className="btn">
+                Edytuj ofertę
+              </button>
+            </Link>
+          )}
+      </div>
+
+      {profile?.role === "recruiter" &&
+        job.recruiter_id === profile.id && (
+          <>
+            <h2
+              style={{
+                marginTop: "20px",
+                marginBottom: "15px",
+              }}
+            >
+              Aplikacje
+            </h2>
+
+            {applications.length === 0 ? (
+              <div className="card">
+                Brak aplikacji.
+              </div>
+            ) : (
+              applications.map((app) => (
+                <div
+                  key={app.id}
+                  className="card"
+                >
+                  <p>
+                    <strong>Imię:</strong>{" "}
+                    {app.applicant_name}
+                  </p>
+
+                  <p>
+                    <strong>Email:</strong>{" "}
+                    {app.applicant_email}
+                  </p>
+
+                  <p>
+                    <strong>Status:</strong>{" "}
+                    <span
+                      className={`status ${app.status}`}
+                    >
+                      {getStatusText(
+                        app.status
+                      )}
+                    </span>
+                  </p>
+
+                  <p>
+                    <strong>Data:</strong>{" "}
+                    {new Date(
+                      app.applied_at
+                    ).toLocaleDateString()}
+                  </p>
+
+                  <details>
+                    <summary>
+                      Dodana wiadomość 
+                    </summary>
+
+                    <p
+                      style={{
+                        marginTop: "10px",
+                      }}
+                    >
+                      {app.cover_letter}
+                    </p>
+                  </details>
+
+                  <br />
+
+                  <button
+                    className="btn"
+                    onClick={() =>
+                      updateStatus(
+                        app.id,
+                        "reviewed"
+                      )
+                    }
+                  >
+                    Przejrzana
+                  </button>
+
+                  <button
+                    className="btn"
+                    style={{
+                      marginLeft: "10px",
+                    }}
+                    onClick={() =>
+                      updateStatus(
+                        app.id,
+                        "accepted"
+                      )
+                    }
+                  >
+                    Zaakceptuj
+                  </button>
+
+                  <button
+                    className="btn btn-danger"
+                    style={{
+                      marginLeft: "10px",
+                    }}
+                    onClick={() =>
+                      updateStatus(
+                        app.id,
+                        "rejected"
+                      )
+                    }
+                  >
+                    Odrzuć
+                  </button>
+                </div>
+              ))
+            )}
+          </>
+        )}
+    </div>
+  );
+}
