@@ -1,3 +1,5 @@
+// zabezpieczenie zeby nie mozna bylo przejsc na inny link niz /login lub /register jesli nie jest sie zalogowanym
+
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "../services/supabase";

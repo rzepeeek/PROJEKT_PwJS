@@ -1,3 +1,5 @@
+// polaczenie z baza danych
+
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = "https://idvtppkozgnegtmshvvb.supabase.co";

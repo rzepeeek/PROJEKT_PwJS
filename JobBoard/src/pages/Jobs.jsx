@@ -1,3 +1,5 @@
+// wyswietlanie listy aktualnych ofert pracy
+
 import { useEffect, useState } from "react";
 import { supabase } from "../services/supabase";
 import { Link } from "react-router-dom";

@@ -1,3 +1,5 @@
+// formularz aplikowania na oferte pracy
+
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../services/supabase";
@@ -36,7 +38,6 @@ export default function Apply() {
       .eq("id", user.id)
       .single();
 
-    // tylko kandydaci mogą aplikować
     if (!profileData || profileData.role !== "candidate") {
       navigate("/jobs");
       return;
@@ -113,40 +114,79 @@ export default function Apply() {
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Aplikacja</h1>
+  <div className="container">
+    <div
+      className="card"
+      style={{
+        maxWidth: "700px",
+        margin: "0 auto",
+      }}
+    >
+      <h1 style={{ marginBottom: "10px" }}>
+        Aplikacja
+      </h1>
 
-      <h2>{job.position}</h2>
+      <h2 style={{ marginBottom: "5px" }}>
+        {job.position}
+      </h2>
 
-      <p>{job.company}</p>
+      <p
+        style={{
+          color: "#666",
+          marginBottom: "25px",
+        }}
+      >
+        {job.company}
+      </p>
 
       <form onSubmit={handleSubmit}>
-        <p>
-          <strong>Imię:</strong> {profile.full_name}
-        </p>
+        <div
+          style={{
+            background: "#f8f9fa",
+            padding: "15px",
+            borderRadius: "10px",
+            marginBottom: "20px",
+          }}
+        >
+          <p>
+            <strong>Imię:</strong> {profile.full_name}
+          </p>
 
-        <p>
-          <strong>Email:</strong> {email}
-        </p>
+          <p>
+            <strong>Email:</strong> {email}
+          </p>
+        </div>
 
-        <label>Cover Letter</label>
-        <br />
+        <label
+          style={{
+            display: "block",
+            marginBottom: "10px",
+            fontWeight: "600",
+          }}
+        >
+          List motywacyjny
+        </label>
 
         <textarea
-          rows="8"
-          cols="60"
+          className="input"
+          rows="10"
           value={coverLetter}
           onChange={(e) => setCoverLetter(e.target.value)}
+          placeholder="Opisz swoje doświadczenie, umiejętności oraz powody aplikowania na to stanowisko..."
           required
         />
 
         <br />
         <br />
 
-        <button type="submit">
+        <button
+          type="submit"
+          className="btn"
+        >
           Wyślij aplikację
         </button>
       </form>
     </div>
-  );
+  </div>
+);
 }

@@ -1,3 +1,5 @@
+// panel uzytkownika dostosowany do roli
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../services/supabase";

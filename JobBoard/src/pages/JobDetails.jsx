@@ -1,3 +1,5 @@
+// szczegolowe informacje o wybranej ofercie pracy
+
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../services/supabase";
@@ -122,6 +124,27 @@ export default function JobDetails() {
         <br />
 
         <h3>Opis stanowiska</h3>
+
+      <div
+        style={{
+          marginTop: "15px",
+          lineHeight: "1.8",
+        }}
+>
+      {job.description
+        ?.split("\n")
+          .filter((line) => line.trim() !== "")
+          .map((line, index) => (
+        <p
+        key={index}
+        style={{
+          marginBottom: "12px",
+        }}
+      >
+        {line}
+      </p>
+    ))}
+</div>
 
         <p>{job.description}</p>
 

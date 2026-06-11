@@ -1,3 +1,5 @@
+// plik stanowi punkt wejscia aplikacji odpowiada za uruchomienie projektu React i wyrenderowanie glownego komponentu App
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'

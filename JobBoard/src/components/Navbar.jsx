@@ -1,3 +1,5 @@
+// wyswietlanie gornego paska nawigacyjnego, przechodzenie miedzy roznymi widokami aplikacji oraz wylogowywanie
+
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
 
@@ -5,7 +7,6 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Ukryj navbar na login i register
   if (
     location.pathname === "/login" ||
     location.pathname === "/register"

@@ -1,3 +1,5 @@
+// plik odpowiedzialny za budowanie i uruchamianie aplikacji
+
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 

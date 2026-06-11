@@ -1,3 +1,5 @@
+// proces logowania uzytkownika z wykorzystaniem supabase
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
