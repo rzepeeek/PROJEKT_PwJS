@@ -17,6 +17,7 @@ export default function EditJob() {
   const [salaryMax, setSalaryMax] = useState("");
   const [description, setDescription] = useState("");
 
+  // pobieranie danych oferty po otwarciu strony edycji
   useEffect(() => {
     loadJob();
   }, []);
@@ -31,6 +32,7 @@ export default function EditJob() {
       return;
     }
 
+    // sprawdzenie czy uzytkownik posiada role rekrutera
     const { data: profile } = await supabase
       .from("profiles")
       .select("*")
@@ -42,6 +44,7 @@ export default function EditJob() {
       return;
     }
 
+    // pobieranie danych wybranej oferty
     const { data, error } = await supabase
       .from("job_postings")
       .select("*")
@@ -53,11 +56,13 @@ export default function EditJob() {
       return;
     }
 
+    // sprawdzenie czy oferta nalezy do zalogowanego rekrutera
     if (data.recruiter_id !== user.id) {
       navigate("/jobs");
       return;
     }
 
+    // uzupelnienie formularza aktualnymi danymi oferty
     setCompany(data.company);
     setPosition(data.position);
     setLocation(data.location);
@@ -71,6 +76,7 @@ export default function EditJob() {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    // aktualizacja danych oferty w bazie danych
     const { error } = await supabase
       .from("job_postings")
       .update({
@@ -89,10 +95,12 @@ export default function EditJob() {
     }
 
     alert("Oferta zaktualizowana");
+    // powrot do szczegolow oferty po zapisaniu zmian
     navigate(`/jobs/${id}`);
   }
 
   async function deactivateJob() {
+    // dezaktywacja oferty bez usuwaniej jej z bazy danych
     const { error } = await supabase
       .from("job_postings")
       .update({
@@ -109,6 +117,7 @@ export default function EditJob() {
     navigate("/jobs");
   }
 
+  // wyswietlenie komunikatu podczas ladowania danych
   if (loading) {
     return <h2>Ładowanie...</h2>;
   }
@@ -116,6 +125,7 @@ export default function EditJob() {
   return (
     <div className="container">
       <div
+      // formularz umozliwiajacy edycje danych oferty pracy
         className="card"
         style={{
           maxWidth: "700px",
@@ -207,6 +217,7 @@ export default function EditJob() {
 
         <br />
 
+         // przycisk dezaktywacji oferty
         <button
           className="btn btn-danger"
           onClick={deactivateJob}

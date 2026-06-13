@@ -12,6 +12,7 @@ export default function JobDetails() {
   const [applications, setApplications] = useState([]);
   const [userApplication, setUserApplication] = useState(null);
 
+  // pobieranie danych oferty, uzytkownika oraz aplikacji po otwarciu strony
   useEffect(() => {
     loadData();
   }, []);
@@ -22,6 +23,7 @@ export default function JobDetails() {
     } = await supabase.auth.getUser();
 
     if (user) {
+      // pobieranie profilu zalogowanego uzytkownika
       const { data: profileData } = await supabase
         .from("profiles")
         .select("*")
@@ -30,6 +32,7 @@ export default function JobDetails() {
 
       setProfile(profileData);
 
+      // sprawdzenie czy kandydat aplikowal juz na te oferte
       if (profileData?.role === "candidate") {
         const { data: applicationData } = await supabase
           .from("applications")
@@ -42,6 +45,7 @@ export default function JobDetails() {
       }
     }
 
+    // pobieranie szczegolow wybranej oferty pracy
     const { data: jobData, error } = await supabase
       .from("job_postings")
       .select("*")
@@ -55,6 +59,7 @@ export default function JobDetails() {
 
     setJob(jobData);
 
+    // pobieranie wszystkich aplikacji dla wlasciciela oferty
     if (
       user &&
       jobData.recruiter_id === user.id
@@ -69,6 +74,7 @@ export default function JobDetails() {
   }
 
   async function updateStatus(applicationId, newStatus) {
+    // aktualizacja statusu aplikacji przez rekrutera
     const { error } = await supabase
       .from("applications")
       .update({
@@ -84,6 +90,7 @@ export default function JobDetails() {
     loadData();
   }
 
+  // zmiana statusow aplikacji na czytelne nazwy
   function getStatusText(status) {
     switch (status) {
       case "pending":
@@ -99,6 +106,7 @@ export default function JobDetails() {
     }
   }
 
+  // wyswietlenie komunikatu podczas ladowania oferty
   if (!job) {
     return <h2>Ładowanie...</h2>;
   }
@@ -106,6 +114,7 @@ export default function JobDetails() {
   return (
     <div className="container">
       <div className="card">
+        {/* wyswietlenie podstawowych informacji o ofercie pracy */}
         <h1>{job.position}</h1>
 
         <p>
@@ -125,6 +134,7 @@ export default function JobDetails() {
 
         <h3>Opis stanowiska</h3>
 
+      {/* prezentacja opisu stanowiska */}
       <div
         style={{
           marginTop: "15px",
@@ -150,6 +160,7 @@ export default function JobDetails() {
 
         <br />
 
+        {/* sekcja aplikowania dla kandydatow */}
         {profile?.role === "candidate" && (
           <>
             {userApplication ? (
@@ -175,6 +186,7 @@ export default function JobDetails() {
           </>
         )}
 
+        {/* mozliwosc edycji oferty dla jej wlasciciela */}
         {profile?.role === "recruiter" &&
           job.recruiter_id === profile.id && (
             <Link to={`/jobs/${job.id}/edit`}>
@@ -185,6 +197,7 @@ export default function JobDetails() {
           )}
       </div>
 
+      {/* panel zarzadzania aplikacjami dostepny dla rekrutera */}
       {profile?.role === "recruiter" &&
         job.recruiter_id === profile.id && (
           <>
@@ -197,6 +210,7 @@ export default function JobDetails() {
               Aplikacje
             </h2>
 
+            {/* lista kandydatow wraz z mozliwoscia zmiany statusu aplikacji */}
             {applications.length === 0 ? (
               <div className="card">
                 Brak aplikacji.

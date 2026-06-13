@@ -1,3 +1,6 @@
+/* plik odpowiada za globalne stylowanie aplikacji, definiujac wyglad formularzy, przyciskow, kart, paska nawigacyjnego,
+statusow aplikacji oraz ogolny uklad interfejsu uzytkownika */
+
 * {
   margin: 0;
   padding: 0;

@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [applications, setApplications] = useState([]);
   const [jobs, setJobs] = useState([]);
 
+  // pobieranie danych uzytkownika po zaladowaniu komponentu
   useEffect(() => {
     getProfile();
   }, []);
@@ -20,6 +21,7 @@ export default function Dashboard() {
 
     if (!user) return;
 
+    // pobieranie profilu zalogowanego uzytkownika
     const { data, error } = await supabase
       .from("profiles")
       .select("*")
@@ -33,6 +35,7 @@ export default function Dashboard() {
 
     setProfile(data);
 
+    // pobranie aplikacji wyslanych przez kandydata
     if (data.role === "candidate") {
       const { data: applicationsData } = await supabase
         .from("applications")
@@ -48,6 +51,7 @@ export default function Dashboard() {
       setApplications(applicationsData || []);
     }
 
+    // pobieranie ofert dodanych przez rekrutera
     if (data.role === "recruiter") {
       const { data: jobsData } = await supabase
         .from("job_postings")
@@ -75,6 +79,7 @@ export default function Dashboard() {
     }
   }
 
+// zamiana statusow aplikacji na czytelne nazwy
 function getStatusText(status) {
   switch (status) {
     case "pending":
@@ -90,21 +95,7 @@ function getStatusText(status) {
   }
 }
 
-function getStatusText(status) {
-  switch (status) {
-    case "pending":
-      return "Oczekuje";
-    case "reviewed":
-      return "Przejrzana";
-    case "accepted":
-      return "Zaakceptowana";
-    case "rejected":
-      return "Odrzucona";
-    default:
-      return status;
-  }
-}
-
+// zamiana nazw rol na przyjazne dla uzytkownika
 function getRoleText(role) {
   switch (role) {
     case "candidate":
@@ -116,6 +107,7 @@ function getRoleText(role) {
   }
 }
   
+// wyswietlenie komunikatu podczas ladowania danych
   if (!profile) {
     return <h2 style={{ textAlign: "center" }}>Ładowanie...</h2>;
   }
@@ -131,7 +123,7 @@ function getRoleText(role) {
           <strong>Rola:</strong> {getRoleText(profile.role)}
         </p>
       </div>
-
+      {/* widok dla kandydatow */}
       {profile.role === "candidate" && (
         <>
           <div className="card">
@@ -190,6 +182,7 @@ function getRoleText(role) {
         </>
       )}
 
+      {/* widok dla rekruterow */}
       {profile.role === "recruiter" && (
         <>
           <div className="card">

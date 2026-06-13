@@ -8,6 +8,7 @@ export default function ProtectedRoute({ children }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
+  // sprawdzenie przy zaladowaniu komponentu, czy uzytkownik jest zalogowany
   useEffect(() => {
     checkUser();
   }, []);
@@ -21,13 +22,16 @@ export default function ProtectedRoute({ children }) {
     setLoading(false);
   }
 
+  // napis ladowanie podczas przechodzenia miedzy stronami
   if (loading) {
     return <h2>Ładowanie...</h2>;
   }
 
+  // przekierowanie na strone logowania jesli ktos nie jest zalogowany
   if (!user) {
     return <Navigate to="/login" />;
   }
 
+  // wyswietlenie docelowej strony po poprawnym zalogowaniu
   return children;
 }

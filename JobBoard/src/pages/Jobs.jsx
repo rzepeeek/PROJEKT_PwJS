@@ -9,20 +9,24 @@ export default function Jobs() {
   const [locationFilter, setLocationFilter] = useState("");
   const [salarySort, setSalarySort] = useState("newest");
 
+  // ponowne pobranie ofert po zmianie filtrow lub sortowania
   useEffect(() => {
     loadJobs();
   }, [locationFilter, salarySort]);
 
   async function loadJobs() {
+    // pobranie aktywnych ofert pracy z bazy danych
     let query = supabase
       .from("job_postings")
       .select("*")
       .eq("is_active", true);
 
+    // filtrowanie ofert wedlug wybranej lokalizacji
     if (locationFilter !== "") {
       query = query.eq("location", locationFilter);
     }
 
+    // sortowanie ofert wedlug wynagrodzenia lub daty dodania
     if (salarySort === "salary_desc") {
       query = query.order("salary_max", {
         ascending: false,
@@ -47,6 +51,7 @@ export default function Jobs() {
     setJobs(data);
   }
 
+  // utworzenie listy dostepnych lokalizacji do filtrowania
   const locations = [...new Set(jobs.map((job) => job.location))];
 
   return (
@@ -55,6 +60,7 @@ export default function Jobs() {
         Oferty pracy
       </h1>
 
+      {/* panel filtrowania i sortowania ofert */}
       <div className="card">
         <label>Lokalizacja: </label>
 
@@ -96,6 +102,7 @@ export default function Jobs() {
         </select>
       </div>
 
+      {/* wyswietlenie listy ofert pracy lub komunikatu o ich braku */}
       {jobs.length === 0 ? (
         <p>Brak ofert pracy</p>
       ) : (
@@ -104,6 +111,7 @@ export default function Jobs() {
             key={job.id}
             className="card"
           >
+            {/* podstawowe informacje o ofercie wraz z linkiem do szczegolow */}
             <h2>
               <Link to={`/jobs/${job.id}`}>
                 {job.position}

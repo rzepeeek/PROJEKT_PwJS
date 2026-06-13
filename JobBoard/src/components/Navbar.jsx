@@ -7,6 +7,7 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // ukrywanie paska nawigacyjnego na stronach logowania i rejestracji
   if (
     location.pathname === "/login" ||
     location.pathname === "/register"
@@ -14,6 +15,7 @@ export default function Navbar() {
     return null;
   }
 
+  // wylogowanie uzytkownika i przekierowanie na strone logowania
   async function handleLogout() {
     await supabase.auth.signOut();
     navigate("/login");
@@ -23,6 +25,7 @@ export default function Navbar() {
     <div className="navbar">
       <h2>💼 Job Board</h2>
 
+      {/* linki nawigacyjne dostepne po zalogowaniu */}
       <div className="nav-links">
         <Link to="/jobs">Oferty</Link>
 
@@ -30,6 +33,7 @@ export default function Navbar() {
           Dashboard
         </Link>
 
+      {/* przycisk wylogowania */}
         <button
           className="btn"
           onClick={handleLogout}

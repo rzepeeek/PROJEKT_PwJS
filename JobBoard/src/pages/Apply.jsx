@@ -16,6 +16,7 @@ export default function Apply() {
 
   const [coverLetter, setCoverLetter] = useState("");
 
+  // pobranie danych uzytkownika, profilu i oferty po zaladowaniu
   useEffect(() => {
     loadData();
   }, []);
@@ -25,6 +26,7 @@ export default function Apply() {
       data: { user },
     } = await supabase.auth.getUser();
 
+    // przekierowanie do logowania jesli uzytkownik nie jest zalogowany
     if (!user) {
       navigate("/login");
       return;
@@ -32,6 +34,7 @@ export default function Apply() {
 
     setEmail(user.email);
 
+    // pobieranie profilu uzytkownika i sprawdzenie jego roli
     const { data: profileData } = await supabase
       .from("profiles")
       .select("*")
@@ -43,12 +46,14 @@ export default function Apply() {
       return;
     }
 
+    // pobieranie szczegolow wybranej oferty pracy
     const { data: jobData } = await supabase
       .from("job_postings")
       .select("*")
       .eq("id", id)
       .single();
 
+    // sprawdzenie czy uzytkownik wczesniej aplikowal na te oferte
     const { data: existingApplication } = await supabase
       .from("applications")
       .select("*")
@@ -66,6 +71,7 @@ export default function Apply() {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    // zabezpieczenie przed wielokrotnym wyslaniem aplikacji
     if (alreadyApplied) {
       alert("Już aplikowałeś na tę ofertę.");
       return;
@@ -75,6 +81,7 @@ export default function Apply() {
       data: { user },
     } = await supabase.auth.getUser();
 
+    // zapisanie aplikacji w bazie danych
     const { error } = await supabase
       .from("applications")
       .insert({
@@ -92,15 +99,19 @@ export default function Apply() {
 
     alert("Aplikacja wysłana");
 
+    // powrot do szczegolow oferty po wyslaniu aplikacji
     navigate(`/jobs/${id}`);
   }
 
+  // wyswietlenie komunikatu podczas ladowania danych
   if (!job || !profile) {
     return <h2>Ładowanie...</h2>;
   }
 
+  // informacja o wczesniej wyslanej aplikacji
   if (alreadyApplied) {
     return (
+      // formularz aplikacyjny wraz z danymi kandydata
       <div style={{ padding: "20px" }}>
         <h1>{job.position}</h1>
 

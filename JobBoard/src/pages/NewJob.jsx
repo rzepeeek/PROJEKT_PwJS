@@ -16,6 +16,7 @@ export default function NewJob() {
   const [salaryMax, setSalaryMax] = useState("");
   const [description, setDescription] = useState("");
 
+  // sprawdzenie uprawnien uzytkownika po otwarciu strony
   useEffect(() => {
     checkAccess();
   }, []);
@@ -25,11 +26,13 @@ export default function NewJob() {
       data: { user },
     } = await supabase.auth.getUser();
 
+    // weryfikacja czy uzytkownik jest zalogowany
     if (!user) {
       navigate("/login");
       return;
     }
 
+    // sprawdzenie czy uzytkownik posiada role rekrutera
     const { data } = await supabase
       .from("profiles")
       .select("*")
@@ -51,6 +54,7 @@ export default function NewJob() {
       data: { user },
     } = await supabase.auth.getUser();
 
+    // dodanie nowej oferty pracy do bazy danych
     const { error } = await supabase
       .from("job_postings")
       .insert({
@@ -68,16 +72,19 @@ export default function NewJob() {
       return;
     }
 
+    // przekierowanie do listy ofert po zalogowaniu
     alert("Oferta dodana");
     navigate("/jobs");
   }
 
+  // wyswietlenie komunikatu podczas sprawdzania uprawnien
   if (loading) {
     return <h2>Ładowanie...</h2>;
   }
 
   return (
     <div className="container">
+      {/* formularz dodawania nowej oferty pracy */}
       <div
         className="card"
         style={{

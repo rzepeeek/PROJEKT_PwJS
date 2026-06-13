@@ -10,6 +10,7 @@ export default function Login() {
 
   const navigate = useNavigate();
 
+  // obsluga procesu logowania uzytkownika
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -18,11 +19,13 @@ export default function Login() {
       password,
     });
 
+    // wyswietlenie bledu w przypadku nieudanego logowania
     if (error) {
       alert(error.message);
       return;
     }
 
+    // przekierowanie uzytkownika do panelu po poprawnym zalogowaniu
     navigate("/dashboard");
   };
 
@@ -31,6 +34,7 @@ export default function Login() {
       <div className="login-card">
         <h1>Logowanie</h1>
 
+        {/* formularz logowania uzytkownika */}
         <form onSubmit={handleLogin}>
           <label>Email</label>
 
@@ -66,6 +70,7 @@ export default function Login() {
             textAlign: "center",
           }}
         >
+          {/* link do strony rejestracji dla nowych uzytkownikow */}
           Nie masz konta?{" "}
           <Link to="/register">
             Zarejestruj się

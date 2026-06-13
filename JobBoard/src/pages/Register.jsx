@@ -10,6 +10,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("candidate");
 
+  // obsluga procesu rejestracji nowego uzytkownika
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -24,11 +25,13 @@ export default function Register() {
       },
     });
 
+    // wyswietlenie komunikatu w przypadku bledu rejestracji
     if (error) {
       alert(error.message);
       return;
     }
 
+    // informacja o poprawnym utworzeniu konta
     alert("Konto utworzone!");
   };
 
@@ -37,6 +40,7 @@ export default function Register() {
       <div className="login-card">
         <h1>Rejestracja</h1>
 
+        {/* formularz tworzenia nowego konta uzytkownika */}
         <form onSubmit={handleRegister}>
           <label>Imię i nazwisko</label>
 
@@ -97,6 +101,7 @@ export default function Register() {
             textAlign: "center",
           }}
         >
+          {/* link do strony logowania dla istniejacych uzytkownikow */}
           Masz już konto?{" "}
           <Link to="/login">
             Zaloguj się
